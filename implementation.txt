@@ -1,0 +1,133 @@
+# Field Service AI Assistant - Project Brief
+
+## Overview
+
+We're building a web application for Microsoft's Human-AI Interaction Challenge that helps field service technicians do their jobs more effectively. The core idea is simple: technicians often show up to repair equipment without having all the information they need, and troubleshooting in the field can be challenging, especially for less experienced workers.
+
+## The Problem
+
+When a technician gets a service call for a broken HVAC unit, they typically know very little beyond "it's not working." They might drive 45 minutes to discover they don't have the right parts, or spend an hour troubleshooting something that would have been obvious if they'd known the equipment's service history. 
+
+Even experienced technicians struggle with unfamiliar equipment models or unusual problems. They're often flipping through PDF manuals on their phones, calling colleagues for advice, or relying on memory from similar jobs years ago.
+
+## What We're Building
+
+We need a web-based AI assistant that helps technicians in two key moments:
+
+**Before the visit**: When a technician gets assigned a job, they can ask our system about the equipment. They might say "I'm heading out to fix a Carrier 24ACB3 that's not cooling" and get back relevant information like common problems with that model, what tools they'll need, which parts commonly fail, and any safety concerns.
+
+**During the visit**: When they're on-site looking at the actual equipment, they can describe what they're seeing or take a photo. The system should help them diagnose the problem and walk them through the repair. Think of it as having an experienced technician looking over their shoulder.
+
+## Key Features
+
+The system needs to understand natural language - technicians should be able to talk to it like they'd talk to a colleague. When they ask about equipment, it should pull together information from manuals, known issues, and past service records to give them useful, actionable information.
+
+The computer vision component is crucial for on-site support. A technician should be able to snap a photo of equipment and have the system identify what they're looking at, spot obvious issues (like a damaged capacitor or loose connection), and provide context-aware guidance.
+
+The conversation needs to be interactive. If a technician says "I checked the capacitor and it looks fine," the system should be able to suggest next steps based on that information. It's not just a static troubleshooting guide - it's a dynamic assistant that adapts to what's actually happening in the field.
+
+## Technical Approach
+
+We're using a multi-agent AI system where different specialized agents handle different aspects of the problem. One agent focuses on pre-visit preparation and research, while another handles real-time troubleshooting. They'll be built using LangGraph and backed by a large language model.
+
+For the visual analysis, we'll use computer vision models that can identify equipment types and detect common issues. The web interface needs to be simple and work well on tablets since that's what technicians typically carry.
+
+The backend will be built with FastAPI to handle both regular HTTP requests and WebSocket connections for real-time chat. We'll need some form of vector storage for semantic search through manuals and documentation.
+
+## User Experience
+
+A technician starting their day would open our web app and see their scheduled jobs. They click on one and immediately start asking questions: "What do I need to know about this model?" or "Show me common problems with units that won't start."
+
+Once on-site, they switch to the on-site mode. They might type "compressor is running but no cold air" or upload a photo of the unit. The system responds with targeted suggestions and can walk them through diagnostic steps.
+
+The interface should feel like texting with a knowledgeable colleague - quick, natural, and helpful. Information should be presented clearly with the most important details first. We're not trying to replace the technician's expertise; we're augmenting it.
+
+## Scope for the Hackathon
+
+For the demo, we need to show compelling scenarios for both pre-visit and on-site assistance. Focus on HVAC and electrical systems since they're common and visually distinctive. We need at least three solid demo flows that show the system's capabilities.
+
+We don't need user authentication, data persistence, or production-ready error handling. The focus is on demonstrating the AI capabilities and the user experience. If something isn't working perfectly, we can hard-code some fallbacks for the demo.
+
+## Success Criteria
+
+The judges should walk away thinking "this would actually help technicians in the field." The AI responses need to be genuinely useful, not just generic. The computer vision should add real value - identifying things that might not be obvious to a junior technician. The conversation flow should feel natural and the information should be presented in a way that's useful when you're standing in front of broken equipment with a customer waiting.
+
+## Expected Deliverables
+
+A working web application that demonstrates:
+- Natural conversation with an AI assistant about equipment
+- Useful preparation information before site visits  
+- Photo analysis that identifies equipment and issues
+- Interactive troubleshooting that adapts to the situation
+- A smooth, intuitive user experience that would work in the field
+
+The code should be clean enough to demo reliably but doesn't need to be production-ready. Focus on the experience and capabilities, not on scalability or edge cases.
+
+## Project Structure
+
+```
+techassist-ai/
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Chat/
+│   │   │   │   ├── Chat.tsx
+│   │   │   │   ├── MessageBubble.tsx
+│   │   │   │   └── DataCard.tsx
+│   │   │   ├── ImageUpload/
+│   │   │   │   └── ImageUpload.tsx
+│   │   │   └── Layout/
+│   │   │       └── Layout.tsx
+│   │   ├── services/
+│   │   │   ├── api.ts
+│   │   │   ├── websocket.ts
+│   │   │   └── types.ts
+│   │   ├── hooks/
+│   │   │   ├── useChat.ts
+│   │   │   └── useWebSocket.ts
+│   │   ├── App.tsx
+│   │   └── index.tsx
+│   ├── package.json
+│   └── tailwind.config.js
+│
+├── backend/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py
+│   │   ├── config.py
+│   │   ├── routers/
+│   │   │   ├── agents.py
+│   │   │   ├── vision.py
+│   │   │   └── websocket.py
+│   │   ├── services/
+│   │   │   ├── agent_service.py
+│   │   │   ├── vision_service.py
+│   │   │   └── cache_service.py
+│   │   ├── models/
+│   │   │   └── schemas.py
+│   │   └── utils/
+│   │       └── helpers.py
+│   ├── requirements.txt
+│   └── Dockerfile
+│
+├── docker-compose.yml
+├── .env.example
+└── README.md
+```
+
+## Recommended Tools
+
+For the frontend, React with TypeScript will give us a good developer experience and help catch errors early. Use Tailwind CSS for styling - it's fast to work with and looks professional out of the box. For real-time communication, the socket.io client library makes WebSocket handling straightforward.
+
+On the backend, FastAPI is perfect for this project. It's fast to develop with, has great documentation, and handles both REST endpoints and WebSockets well. Use Pydantic for data validation - it'll save debugging time.
+
+For the AI agents, LangGraph provides a good framework for building stateful, multi-agent systems. You'll want to use OpenAI or Anthropic's Claude for the language model - both have good APIs and reliable performance. For document search and retrieval, consider Chroma or Pinecone as vector databases - they're easy to set up and have Python SDKs.
+
+The computer vision work can be done with OpenCV for image processing and a pre-trained model like YOLO or Detectron2 for object detection. These have good Python support and lots of documentation.
+
+For local development, Docker Compose will let everyone run the full stack with one command. Include Redis for caching and session management - it's simple and fast.
+
+During development, use ngrok to expose your local server for testing on different devices. For the demo, you might want to deploy the frontend to Vercel (free and easy) and the backend to Railway or Render (both have free tiers that are sufficient for demos).
+
+The key is choosing boring, well-documented tools that work well together. This isn't the time to experiment with cutting-edge frameworks - stick with proven technologies that the team already knows or can learn quickly.
